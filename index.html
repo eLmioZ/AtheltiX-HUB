@@ -1306,32 +1306,17 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // =========================================================================
-        // MASUKKAN KONFIGURASI FIREBASE ANDA DI SINI (Sekitar Baris 1120 - 1135)
-        // Gantikan nilai placeholder di bawah dengan konfigurasi sebenar dari Firebase Console anda.
-        // =========================================================================
+        // Konfigurasi Firebase Rasmi Projek AthletiX HUB
         const firebaseConfig = {
-              apiKey: "AIzaSyCW8dv5gKGgcQuqcsXGVCVC2_uJQG5vzOI",
-              authDomain: "athletix-hub-66225.firebaseapp.com",
-              databaseURL: "https://athletix-hub-66225-default-rtdb.asia-southeast1.firebasedatabase.app",
-              projectId: "athletix-hub-66225",
-              storageBucket: "athletix-hub-66225.firebasestorage.app",
-              messagingSenderId: "223025789082",
-              appId: "1:223025789082:web:42e2e4b044314e07b98723",
-              measurementId: "G-LQEJ3MRYY3"
-          };
-
-        const isPlaceholderKey = !rawFirebaseConfig.apiKey || rawFirebaseConfig.apiKey.includes("YOUR_API_KEY");
-
-        // Gunakan fallback dummy config jika apiKey masih placeholder supaya aplikasi tidak crash
-        const firebaseConfig = isPlaceholderKey ? {
-            apiKey: "AIzaSyDummyKeyForSandboxTestingOnly123456",
-            authDomain: "sandbox-app.firebaseapp.com",
-            projectId: "sandbox-project",
-            storageBucket: "sandbox-project.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abcdef123456789"
-        } : rawFirebaseConfig;
+            apiKey: "AIzaSyCW8dv5gKGgcQuqcsXGVCVC2_uJQG5vzOI",
+            authDomain: "athletix-hub-66225.firebaseapp.com",
+            databaseURL: "https://athletix-hub-66225-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "athletix-hub-66225",
+            storageBucket: "athletix-hub-66225.firebasestorage.app",
+            messagingSenderId: "223025789082",
+            appId: "1:223025789082:web:42e2e4b044314e07b98723",
+            measurementId: "G-LQEJ3MRYY3"
+        };
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'skbk-athletix-hub';
 
@@ -1346,17 +1331,13 @@
 
         async function initFirebase() {
             try {
-                if (isPlaceholderKey) {
-                    console.warn("Firebase menggunakan konfigurasi mod simulasi (sandbox). Sila masukkan API key sebenar anda untuk pengeluaran produksi.");
-                    window.firebaseReady = true;
-                    if (typeof window.onFirebaseReady === 'function') {
-                        window.onFirebaseReady();
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token && __initial_auth_token.trim() !== '') {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (tokenErr) {
+                        console.warn("Custom token sign-in failed, falling back to anonymous auth:", tokenErr);
+                        await signInAnonymously(auth);
                     }
-                    return;
-                }
-
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
                     await signInAnonymously(auth);
                 }
@@ -1367,7 +1348,6 @@
                 }
             } catch (err) {
                 console.error("Firebase Auth Error:", err);
-                // Fallback supaya aplikasi tetap boleh berfungsi menggunakan mod tempatan jika auth gagal
                 window.firebaseReady = true;
                 if (typeof window.onFirebaseReady === 'function') {
                     window.onFirebaseReady();
@@ -1489,7 +1469,7 @@
 
         // Firestore Real-time Sync & API Helpers
         window.onFirebaseReady = async function() {
-            const { getFirestore, collection, onSnapshot, doc, getDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+            const { collection, onSnapshot, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
             const db = window.db;
             const appId = window.appId;
 
@@ -1514,7 +1494,6 @@
                         systemUsers.push(docSnap.data());
                     });
                 } else {
-                    // Seed initial users if empty
                     DEFAULT_ACCOUNTS.forEach(async (u) => {
                         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', u.id), u);
                     });
@@ -1532,7 +1511,6 @@
                     if (data.closingTime) systemSettings.closingTime = data.closingTime;
                     if (data.eventLimits) eventLimitsData = data.eventLimits;
                 } else {
-                    // Initialize default config
                     const defaults = {};
                     [...TRACK_INDIVIDUAL, ...TRACK_TEAM, ...FIELD_EVENTS].forEach(ev => {
                         defaults[ev] = { Lelaki: 2, Perempuan: 2 };
@@ -1632,9 +1610,6 @@
             }
         }
 
-        /**
-         * HAD PENYERTAAN & TARIKH TUTUP
-         */
         function getEventLimits() {
             if (eventLimitsData) return eventLimitsData;
             const defaults = {};
@@ -1648,7 +1623,7 @@
         async function saveEventLimits(limits) {
             try {
                 const { db, appId } = window;
-                const { doc, updateDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+                const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
                 const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config');
                 await setDoc(settingsRef, { eventLimits: limits }, { merge: true });
                 eventLimitsData = limits;
@@ -1799,9 +1774,6 @@
             }
         }
 
-        /**
-         * PENGURUSAN PENGGUNA (SEC-02 & BUG-01 FIXES)
-         */
         function renderUsersTable() {
             if (!currentUser || currentUser.role !== 'admin') return;
 
@@ -2104,7 +2076,6 @@
             users = users.filter(u => u.id !== pendingDeleteUserId);
             await saveSystemUsersToFirestore(users);
 
-            // Also delete from Firestore collection document
             try {
                 const { db, appId } = window;
                 const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
