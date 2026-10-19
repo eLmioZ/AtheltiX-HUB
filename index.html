@@ -1467,7 +1467,7 @@
             return { os, browser, device };
         }
 
-        // Firestore Real-time Sync & API Helpers
+        // Firestore Real-time Sync & API Helpers with robust error logging
         window.onFirebaseReady = async function() {
             const { collection, onSnapshot, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
             const db = window.db;
@@ -1483,6 +1483,7 @@
                 renderAll();
             }, (err) => {
                 console.error("Athletes sync error:", err);
+                showToast("Ralat sambungan pangkalan data atlet.", "error");
             });
 
             // 2. Sync Users
@@ -2425,6 +2426,11 @@
         async function handleFormSubmit(e) {
             e.preventDefault();
 
+            if (!window.firebaseReady || !window.db) {
+                showToast("Pangkalan data Firestore belum siap. Sila cuba sebentar lagi.", "error");
+                return;
+            }
+
             if (currentUser?.role !== 'admin' && isPastClosingDate()) {
                 showToast(`Pendaftaran telah ditutup pada ${getFormattedClosingDate()}`, "error");
                 return;
@@ -2497,7 +2503,7 @@
                 switchTab('directory');
             } catch(err) {
                 console.error("Firestore save error:", err);
-                showToast("Gagal menyimpan ke Firestore. Sila cuba lagi.", "error");
+                showToast("Gagal menyimpan ke Firestore. Sila semak rules / konsol pelayar.", "error");
             }
         }
 
