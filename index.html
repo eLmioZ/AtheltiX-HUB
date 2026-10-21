@@ -195,7 +195,7 @@
                     </div>
                     <div>
                         <h1 class="text-base sm:text-lg font-black font-heading tracking-tight leading-tight bg-gradient-to-r from-white via-slate-100 to-amber-300 bg-clip-text text-transparent">ATHLETIX HUB</h1>
-                        <p class="text-[10px] text-blue-300/80 font-medium tracking-wide">Sistem Pendaftaran Pasukan SKBK</p>
+                        <p class="text-[10px] text-blue-300/80 font-medium tracking-wide">Sistem Pendaftaran Pasukan</p>
                     </div>
                 </div>
 
@@ -261,7 +261,7 @@
                 <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="relative z-10">
                     <h2 class="text-xl sm:text-2xl font-black font-heading tracking-tight">Sistem Pendaftaran Pasukan</h2>
-                    <p class="text-xs text-blue-200/90 mt-1.5 leading-relaxed max-w-2xl">Pengurusan pendaftaran dan status kelayakan pasukan secara sistematik dan berstruktur (Firestore Connected).</p>
+                    <p class="text-xs text-blue-200/90 mt-1.5 leading-relaxed max-w-2xl">Pengurusan pendaftaran dan status kelayakan pasukan secara sistematik.</p>
                 </div>
                 <div class="flex items-center gap-3 relative z-10 shrink-0">
                     <button onclick="switchTab('register')" class="w-full sm:w-auto px-5 py-3 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-blue-950 font-black rounded-xl text-xs shadow-glow-amber transition-all duration-200 flex items-center justify-center gap-2 active:scale-95 touch-manipulation">
@@ -2282,7 +2282,7 @@
 
             await saveEventLimits(limits);
             logActivity("Kemaskini Had Kelayakan", "Menukar had maksimum penyertaan kelayakan acara.");
-            showToast("Tetapan kelayakan acara berjaya disimpan ke Firestore!");
+            showToast("Tetapan kelayakan acara berjaya disimpan");
             renderAll();
         }
 
@@ -2307,7 +2307,7 @@
             closeAdminModal();
             renderDashboard();
             logActivity("Kemaskini Tarikh Tutup", `Menukar tarikh tutup pendaftaran kepada ${newDate}, ${newTime}.`);
-            showToast("Tarikh dan masa tutup pendaftaran berjaya dikemas kini!");
+            showToast("Tarikh dan masa akhir pendaftaran berjaya dikemas kini!");
         }
 
         async function handleDeleteClosingDate() {
@@ -2427,7 +2427,7 @@
             e.preventDefault();
 
             if (!window.firebaseReady || !window.db) {
-                showToast("Pangkalan data Firestore belum siap. Sila cuba sebentar lagi.", "error");
+                showToast("Pangkalan data belum bersedia. Sila cuba sebentar lagi.", "error");
                 return;
             }
 
@@ -2489,13 +2489,13 @@
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'athletes', athleteId);
                     await setDoc(docRef, { nama, jantina, pasukan, bib, tahun, acara: selectedEvents }, { merge: true });
                     logActivity("Kemas Kini Atlet", `Mengemaskini maklumat atlet ${nama} (${bib}) bagi pasukan ${pasukan}.`);
-                    showToast("Rekod atlet berjaya dikemas kini di Firestore!");
+                    showToast("Rekod atlet berjaya dikemas kini");
                 } else {
                     const newId = Date.now().toString();
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'athletes', newId);
                     await setDoc(docRef, { nama, jantina, pasukan, bib, tahun, acara: selectedEvents });
                     logActivity("Daftar Atlet Baharu", `Mendaftarkan atlet baharu ${nama} (${bib}) bagi pasukan ${pasukan} (${selectedEvents.length} acara).`);
-                    showToast("Pendaftaran atlet baharu berjaya disimpan ke Firestore!");
+                    showToast("Pendaftaran atlet baharu berjaya disimpan");
                 }
 
                 resetForm();
@@ -2503,7 +2503,7 @@
                 switchTab('directory');
             } catch(err) {
                 console.error("Firestore save error:", err);
-                showToast("Gagal menyimpan ke Firestore. Sila semak rules / konsol pelayar.", "error");
+                showToast("Gagal menyimpan data. Sila semak rules / konsol pelayar.", "error");
             }
         }
 
